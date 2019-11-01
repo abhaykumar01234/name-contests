@@ -9,10 +9,10 @@ const {
 const ContestStatusType = require("./contest-status");
 const NameType = require("./name");
 
-const pgdb = require("../../database/pgdb");
+// const pgdb = require("../../database/pgdb");
 
 module.exports = new GraphQLObjectType({
-	name: "ContestType",
+	name: "Contest",
 
 	fields: () => ({
 		id: { type: GraphQLID },
@@ -23,8 +23,9 @@ module.exports = new GraphQLObjectType({
 		createdAt: { type: new GraphQLNonNull(GraphQLString) },
 		names: {
 			type: new GraphQLList(NameType),
-			resolve(parent, args, { pgPool }) {
-				return pgdb(pgPool).getNames(parent);
+			resolve(parent, args, { loaders }) {
+				// return pgdb(pgPool).getNames(parent);
+				return loaders.namesForContestIds.load(parent.id);
 			}
 		}
 	})

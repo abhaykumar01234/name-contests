@@ -1,7 +1,7 @@
 const { GraphQLEnumType } = require("graphql");
 
 module.exports = new GraphQLEnumType({
-	name: "ContestStatusType",
+	name: "ContestStatus",
 
 	values: {
 		DRAFT: { value: "draft" },

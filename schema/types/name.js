@@ -5,10 +5,11 @@ const {
 	GraphQLNonNull
 } = require("graphql");
 
-const pgdb = require("../../database/pgdb");
+//const pgdb = require("../../database/pgdb");
+const TotalVotes = require("./total-votes");
 
 module.exports = new GraphQLObjectType({
-	name: "NameType",
+	name: "Name",
 
 	fields: () => {
 		const UserType = require("./user");
@@ -19,8 +20,15 @@ module.exports = new GraphQLObjectType({
 			createdAt: { type: new GraphQLNonNull(GraphQLString) },
 			createdBy: {
 				type: new GraphQLNonNull(UserType),
-				resolve(parent, args, { pgPool }) {
-					return pgdb(pgPool).getUserById(parent.createdBy);
+				resolve(parent, args, { loaders }) {
+					return loaders.usersByIds.load(parent.createdBy);
+					// return pgdb(pgPool).getUserById(parent.createdBy);
+				}
+			},
+			totalVotes: {
+				type: TotalVotes,
+				resolve(parent, args, { loaders }) {
+					return loaders.totalVotesByNameIds.load(parent.id);
 				}
 			}
 		};

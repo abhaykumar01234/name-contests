@@ -7,18 +7,13 @@ const {
 	GraphQLInt
 } = require("graphql");
 
-// const { fromSnakeCase } = require("../../lib/util");
-const pgdb = require("../../database/pgdb");
-const mdb = require("../../database/mdb");
-
 const ContestType = require("./contest");
+const ActivityType = require("./activity");
 
 module.exports = new GraphQLObjectType({
-	name: "UserType",
+	name: "User",
 	fields: () => ({
 		id: { type: new GraphQLNonNull(GraphQLID) },
-		// firstName: { type: GraphQLString, resolve: obj => obj.first_name },
-		// firstName: fromSnakeCase(GraphQLString),
 		firstName: { type: GraphQLString },
 		lastName: { type: GraphQLString },
 		fullName: {
@@ -36,30 +31,42 @@ module.exports = new GraphQLObjectType({
 
 		contests: {
 			type: new GraphQLList(ContestType),
-			resolve: (parent, args, { pgPool }) => {
-				// Read data from the database
-				return pgdb(pgPool).getContests(parent);
+			resolve: (parent, args, { loaders }) => {
+				return loaders.contestsForUserIds.load(parent.id);
 			}
 		},
 
 		contestsCount: {
 			type: GraphQLInt,
-			resolve(parent, args, { mPool }, { fieldName }) {
-				return mdb(mPool).getCounts(parent, fieldName);
+			resolve(parent, args, { loaders }, { fieldName }) {
+				return loaders.mdb.usersByIds
+					.load(parent.id)
+					.then(res => res[fieldName]);
 			}
 		},
 
 		namesCount: {
 			type: GraphQLInt,
-			resolve(parent, args, { mPool }, { fieldName }) {
-				return mdb(mPool).getCounts(parent, fieldName);
+			resolve(parent, args, { loaders }, { fieldName }) {
+				return loaders.mdb.usersByIds
+					.load(parent.id)
+					.then(res => res[fieldName]);
 			}
 		},
 
 		votesCount: {
 			type: GraphQLInt,
-			resolve(parent, args, { mPool }, { fieldName }) {
-				return mdb(mPool).getCounts(parent, fieldName);
+			resolve(parent, args, { loaders }, { fieldName }) {
+				return loaders.mdb.usersByIds
+					.load(parent.id)
+					.then(res => res[fieldName]);
+			}
+		},
+
+		activities: {
+			type: new GraphQLList(ActivityType),
+			resolve(obj, args, { loaders }) {
+				return loaders.activitiesForUserIds.load(obj.id);
 			}
 		}
 	})
