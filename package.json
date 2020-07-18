@@ -24,7 +24,7 @@
     "express-graphql": "^0.9.0",
     "graphql": "^14.5.8",
     "humps": "^2.0.1",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "mongodb": "^3.3.3",
     "pg": "^6.0.1"
   },
